@@ -1,0 +1,18 @@
+# PostgreSQL для backend с драйвером asyncpg (опционально).
+# Запуск: docker compose up -d
+# В backend/.env: DATABASE_URL=postgresql://todo:todo@localhost:5432/todo
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: todo
+      POSTGRES_PASSWORD: todo
+      POSTGRES_DB: todo
+    ports:
+      - "5432:5432"
+    volumes:
+      - todo_pg_data:/var/lib/postgresql/data
+
+volumes:
+  todo_pg_data:

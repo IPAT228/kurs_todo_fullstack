@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+
+backend/.env
+backend/.venv/
+mobile/todo_app/.venv/
+backend/todo.db
+backend/**/__pycache__/
+backend/.pytest_cache/
+backend/.ruff_cache/
+mobile/todo_app/.dart_tool/
+mobile/todo_app/build/

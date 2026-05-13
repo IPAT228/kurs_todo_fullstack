@@ -1,0 +1,15 @@
+{
+  "folders": [
+    {
+      "name": "course",
+      "path": "."
+    },
+    {
+      "name": "flutter_app",
+      "path": "mobile/todo_app"
+    }
+  ],
+  "settings": {
+    "terminal.integrated.cwd": "${workspaceFolder:flutter_app}"
+  }
+}

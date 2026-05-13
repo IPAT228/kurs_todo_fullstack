@@ -1,0 +1,29 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Flutter: todo_app (Chrome) — workspace file",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "cwd": "${workspaceFolder:flutter_app}",
+      "deviceId": "chrome"
+    },
+    {
+      "name": "Flutter: todo_app (Chrome, opened repo as folder)",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "cwd": "${workspaceFolder}/mobile/todo_app",
+      "deviceId": "chrome"
+    },
+    {
+      "name": "Flutter: todo_app (Chrome, opened only mobile/todo_app)",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "cwd": "${workspaceFolder}",
+      "deviceId": "chrome"
+    }
+  ]
+}

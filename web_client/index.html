@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Список задач</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <style>
+      :root {
+        --bg: #f0f4f8;
+        --card: #fff;
+        --text: #1e293b;
+        --muted: #64748b;
+        --accent: #0d9488;
+        --accent-hover: #0f766e;
+        --danger: #dc2626;
+        --radius: 12px;
+        --shadow: 0 2px 12px rgba(15, 23, 42, 0.08);
+        font-family: "Segoe UI", system-ui, Roboto, sans-serif;
+        color: var(--text);
+        background: var(--bg);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        padding: 1rem;
+      }
+      .wrap {
+        max-width: 720px;
+        margin: 0 auto;
+      }
+      h1 {
+        font-size: clamp(1.25rem, 4vw, 1.6rem);
+        font-weight: 700;
+        margin: 0 0 0.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .muted {
+        color: var(--muted);
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+      }
+      .card {
+        background: var(--card);
+        border-radius: var(--radius);
+        padding: 1.1rem 1.25rem;
+        margin-top: 1rem;
+        box-shadow: var(--shadow);
+      }
+      label {
+        display: block;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--muted);
+        margin: 0.65rem 0 0.3rem;
+      }
+      label:first-of-type {
+        margin-top: 0;
+      }
+      input[type="text"],
+      input[type="email"],
+      input[type="password"],
+      input[type="url"] {
+        width: 100%;
+        padding: 0.55rem 0.65rem;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        font-size: 1rem;
+      }
+      input.invalid {
+        border-color: var(--danger);
+        outline-color: rgba(220, 38, 38, 0.35);
+      }
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.6rem;
+        align-items: flex-end;
+      }
+      .row > .grow {
+        flex: 1 1 160px;
+      }
+      button {
+        cursor: pointer;
+        border: none;
+        border-radius: 8px;
+        padding: 0.55rem 1rem;
+        font-size: 0.95rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        justify-content: center;
+        background: var(--accent);
+        color: #fff;
+        transition: background 0.15s, transform 0.1s;
+      }
+      button:hover:not(:disabled) {
+        background: var(--accent-hover);
+      }
+      button:active:not(:disabled) {
+        transform: scale(0.98);
+      }
+      button:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+      }
+      button.secondary {
+        background: #64748b;
+      }
+      button.secondary:hover:not(:disabled) {
+        background: #475569;
+      }
+      button.ghost {
+        background: transparent;
+        color: var(--accent);
+        border: 1px solid #99f6e4;
+      }
+      button.danger {
+        background: var(--danger);
+        padding: 0.4rem 0.65rem;
+        font-size: 0.85rem;
+      }
+      .toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        align-items: center;
+        margin-bottom: 0.75rem;
+      }
+      .toolbar select {
+        padding: 0.45rem 0.5rem;
+        border-radius: 8px;
+        border: 1px solid #cbd5e1;
+        font-size: 0.9rem;
+        background: #fff;
+      }
+      .msg {
+        margin-top: 0.75rem;
+        padding: 0.55rem 0.65rem;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        display: none;
+      }
+      .msg.show {
+        display: block;
+      }
+      .msg.err {
+        background: #fef2f2;
+        color: #991b1b;
+        border: 1px solid #fecaca;
+      }
+      .msg.ok {
+        background: #ecfdf5;
+        color: #065f46;
+        border: 1px solid #a7f3d0;
+      }
+      .loading-bar {
+        height: 3px;
+        background: linear-gradient(90deg, var(--accent), #5eead4, var(--accent));
+        background-size: 200% 100%;
+        animation: shimmer 1s linear infinite;
+        border-radius: 2px;
+        margin-top: 0.75rem;
+        display: none;
+      }
+      .loading-bar.show {
+        display: block;
+      }
+      @keyframes shimmer {
+        0% {
+          background-position: 200% 0;
+        }
+        100% {
+          background-position: -200% 0;
+        }
+      }
+      ul.tasks {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      ul.tasks li {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.6rem;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #e2e8f0;
+        animation: enter 0.28s ease-out;
+      }
+      ul.tasks li.removing {
+        animation: leave 0.28s ease-in forwards;
+      }
+      @keyframes enter {
+        from {
+          opacity: 0;
+          transform: translateY(-6px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @keyframes leave {
+        to {
+          opacity: 0;
+          transform: translateX(12px);
+        }
+      }
+      .task-body {
+        flex: 1;
+        min-width: 0;
+      }
+      .task-title {
+        font-weight: 600;
+        cursor: text;
+        padding: 0.15rem 0.25rem;
+        margin: -0.15rem -0.25rem;
+        border-radius: 4px;
+      }
+      .task-title:hover {
+        background: #f1f5f9;
+      }
+      .task-title.done {
+        text-decoration: line-through;
+        color: var(--muted);
+        font-weight: 500;
+      }
+      .task-title input {
+        width: 100%;
+        font: inherit;
+        font-weight: 600;
+        padding: 0.2rem 0.35rem;
+        border: 1px solid var(--accent);
+        border-radius: 6px;
+      }
+      .task-desc {
+        font-size: 0.85rem;
+        color: var(--muted);
+        margin-top: 0.2rem;
+      }
+      .task-meta {
+        font-size: 0.72rem;
+        color: #94a3b8;
+        margin-top: 0.35rem;
+      }
+      #viewAuth.hidden,
+      #viewApp.hidden {
+        display: none;
+      }
+      @media (max-width: 520px) {
+        .toolbar {
+          flex-direction: column;
+          align-items: stretch;
+        }
+        .toolbar select {
+          width: 100%;
+        }
+      }
+      .hidden {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <h1><i class="fa-solid fa-list-check" aria-hidden="true"></i> Список задач</h1>
+      <p class="muted">Веб-приложение: регистрация, вход (JWT), задачи. Запустите API на порту 8000.</p>
+
+      <div id="viewAuth" class="card">
+        <label for="baseUrl"><i class="fa-solid fa-link"></i> Адрес API</label>
+        <input id="baseUrl" type="url" value="http://127.0.0.1:8000" autocomplete="off" />
+
+        <label for="email"><i class="fa-solid fa-envelope"></i> Email</label>
+        <input id="email" type="email" autocomplete="username" />
+
+        <label for="password"><i class="fa-solid fa-lock"></i> Пароль (от 6 символов)</label>
+        <input id="password" type="password" autocomplete="current-password" />
+
+        <div class="row" style="margin-top: 1rem">
+          <button type="button" id="btnAuth"><i class="fa-solid fa-right-to-bracket"></i> Войти / зарегистрироваться</button>
+        </div>
+        <div id="authMsg" class="msg err" role="alert"></div>
+        <div id="authLoading" class="loading-bar" aria-hidden="true"></div>
+      </div>
+
+      <div id="viewApp" class="hidden">
+        <div class="card">
+          <div class="row" style="justify-content: space-between; align-items: center">
+            <span class="muted" id="userLabel"></span>
+            <button type="button" id="btnLogout" class="secondary"><i class="fa-solid fa-arrow-right-from-bracket"></i> Выйти</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="toolbar">
+            <label for="filterStatus" style="margin: 0; flex: 0 0 auto"><i class="fa-solid fa-filter"></i> Статус</label>
+            <select id="filterStatus" aria-label="Фильтр по статусу">
+              <option value="all">Все</option>
+              <option value="active">Активные</option>
+              <option value="done">Выполненные</option>
+            </select>
+            <label for="sortBy" style="margin: 0; flex: 0 0 auto"><i class="fa-solid fa-sort"></i> Сортировка</label>
+            <select id="sortBy" aria-label="Поле сортировки">
+              <option value="created_at">По дате</option>
+              <option value="status">По статусу</option>
+            </select>
+            <select id="sortOrder" aria-label="Порядок">
+              <option value="desc">По убыванию</option>
+              <option value="asc">По возрастанию</option>
+            </select>
+            <button type="button" id="btnRefresh" class="ghost"><i class="fa-solid fa-rotate"></i> Обновить</button>
+          </div>
+
+          <div class="row">
+            <div class="grow">
+              <label for="newTitle"><i class="fa-solid fa-plus"></i> Новая задача</label>
+              <input id="newTitle" type="text" placeholder="Заголовок" maxlength="200" />
+            </div>
+            <div style="align-self: flex-end">
+              <button type="button" id="btnAdd"><i class="fa-solid fa-circle-plus"></i> Добавить</button>
+            </div>
+          </div>
+          <label for="newDesc"><i class="fa-solid fa-align-left"></i> Описание (необязательно)</label>
+          <input id="newDesc" type="text" placeholder="Описание" maxlength="4000" />
+
+          <div id="adminBar" class="hidden">
+            <label for="newOwnerId"><i class="fa-solid fa-user-shield"></i> Владелец новой задачи (id пользователя; пусто — вы)</label>
+            <input id="newOwnerId" type="number" min="1" step="1" placeholder="Например, 2" />
+          </div>
+
+          <div id="appMsg" class="msg err" role="alert"></div>
+          <div id="appLoading" class="loading-bar" aria-hidden="true"></div>
+
+          <ul class="tasks" id="taskList" aria-live="polite"></ul>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const TOKEN_KEY = "todo_jwt";
+      const EMAIL_KEY = "todo_email";
+      const ROLE_KEY = "todo_role";
+      const USER_ID_KEY = "todo_user_id";
+
+      const $ = (id) => document.getElementById(id);
+
+      function apiBase() {
+        return $("baseUrl").value.replace(/\/$/, "");
+      }
+
+      function authHeaders() {
+        // Токен добавляется централизованно, чтобы не дублировать код в каждом fetch.
+        const t = localStorage.getItem(TOKEN_KEY);
+        const h = { "Content-Type": "application/json" };
+        if (t) h["Authorization"] = "Bearer " + t;
+        return h;
+      }
+
+      function showMsg(el, text, kind) {
+        if (!text) {
+          el.classList.remove("show", "err", "ok");
+          el.textContent = "";
+          return;
+        }
+        el.textContent = text;
+        el.classList.add("show");
+        el.classList.toggle("err", kind === "err");
+        el.classList.toggle("ok", kind === "ok");
+      }
+
+      function setLoading(el, on) {
+        el.classList.toggle("show", on);
+      }
+
+      function validateAuth() {
+        const email = $("email");
+        const pass = $("password");
+        let ok = true;
+        email.classList.remove("invalid");
+        pass.classList.remove("invalid");
+        if (!email.value.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim())) {
+          email.classList.add("invalid");
+          ok = false;
+        }
+        if (pass.value.length < 6) {
+          pass.classList.add("invalid");
+          ok = false;
+        }
+        return ok;
+      }
+
+      function showApp(show) {
+        $("viewAuth").classList.toggle("hidden", show);
+        $("viewApp").classList.toggle("hidden", !show);
+      }
+
+      function isAdmin() {
+        return localStorage.getItem(ROLE_KEY) === "admin";
+      }
+
+      function tasksBasePath() {
+        return isAdmin() ? "/admin/tasks" : "/tasks";
+      }
+
+      function setAdminUi() {
+        const bar = $("adminBar");
+        if (bar) bar.classList.toggle("hidden", !isAdmin());
+      }
+
+      function buildUserLabel() {
+        const em = localStorage.getItem(EMAIL_KEY) || "";
+        const parts = [];
+        if (em) parts.push("Вы вошли как " + em);
+        if (isAdmin()) parts.push("администратор");
+        return parts.join(" · ");
+      }
+
+      async function refreshUserProfile() {
+        try {
+          const r = await fetch(apiBase() + "/auth/me", { headers: authHeaders() });
+          if (r.status === 401) {
+            logout();
+            showMsg($("authMsg"), "Сессия истекла. Войдите снова.", "err");
+            return false;
+          }
+          if (!r.ok) {
+            showMsg($("appMsg"), "Профиль: " + r.status + " " + (await r.text()), "err");
+            return false;
+          }
+          const u = await r.json();
+          localStorage.setItem(ROLE_KEY, u.role);
+          localStorage.setItem(USER_ID_KEY, String(u.id));
+          setAdminUi();
+          return true;
+        } catch (e) {
+          showMsg($("appMsg"), "Сеть: " + (e.message || e), "err");
+          return false;
+        }
+      }
+
+      async function registerAndLogin() {
+        showMsg($("authMsg"), "", "err");
+        if (!validateAuth()) {
+          showMsg($("authMsg"), "Проверьте email и пароль (не короче 6 символов).", "err");
+          return;
+        }
+        const email = $("email").value.trim();
+        const password = $("password").value;
+        setLoading($("authLoading"), true);
+        try {
+          try {
+            const reg = await fetch(apiBase() + "/auth/register", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ email, password }),
+            });
+            if (!reg.ok && reg.status !== 400) {
+              const tx = await reg.text();
+              throw new Error("Регистрация: " + reg.status + " " + tx);
+            }
+          } catch (e) {
+            if (e instanceof TypeError) {
+              showMsg($("authMsg"), "Сеть: не удалось связаться с сервером. Запущен ли backend?", "err");
+              return;
+            }
+            throw e;
+          }
+          const login = await fetch(apiBase() + "/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: new URLSearchParams({ username: email, password }),
+          });
+          if (!login.ok) {
+            const tx = await login.text();
+            showMsg($("authMsg"), "Вход не выполнен: " + login.status + " " + tx, "err");
+            return;
+          }
+          const data = await login.json();
+          localStorage.setItem(TOKEN_KEY, data.access_token);
+          localStorage.setItem(EMAIL_KEY, email);
+          showApp(true);
+          const okProfile = await refreshUserProfile();
+          if (!okProfile) return;
+          $("userLabel").textContent = buildUserLabel();
+          await loadTasks();
+        } catch (e) {
+          showMsg($("authMsg"), String(e.message || e), "err");
+        } finally {
+          setLoading($("authLoading"), false);
+        }
+      }
+
+      function logout() {
+        localStorage.removeItem(TOKEN_KEY);
+        localStorage.removeItem(EMAIL_KEY);
+        localStorage.removeItem(ROLE_KEY);
+        localStorage.removeItem(USER_ID_KEY);
+        const own = $("newOwnerId");
+        if (own) own.value = "";
+        $("taskList").innerHTML = "";
+        showApp(false);
+        setAdminUi();
+        showMsg($("authMsg"), "", "err");
+      }
+
+      function filterParams() {
+        // Преобразуем состояние UI-фильтров в query-параметры backend API.
+        const f = $("filterStatus").value;
+        const sort = $("sortBy").value;
+        const order = $("sortOrder").value;
+        const p = new URLSearchParams();
+        if (f === "active") p.set("is_done", "false");
+        if (f === "done") p.set("is_done", "true");
+        p.set("sort", sort);
+        p.set("order", order);
+        return p.toString();
+      }
+
+      async function loadTasks() {
+        if (!localStorage.getItem(TOKEN_KEY)) return;
+        showMsg($("appMsg"), "", "err");
+        setLoading($("appLoading"), true);
+        try {
+          const q = filterParams();
+          const r = await fetch(apiBase() + tasksBasePath() + "?" + q, { headers: authHeaders() });
+          if (r.status === 401) {
+            logout();
+            showMsg($("authMsg"), "Сессия истекла. Войдите снова.", "err");
+            return;
+          }
+          if (!r.ok) {
+            showMsg($("appMsg"), "Не удалось загрузить задачи: " + r.status + " " + (await r.text()), "err");
+            return;
+          }
+          const list = await r.json();
+          // После любого изменения перерисовываем список полностью из актуального ответа API.
+          renderTasks(list);
+        } catch (e) {
+          showMsg($("appMsg"), "Сеть: " + (e.message || e), "err");
+        } finally {
+          setLoading($("appLoading"), false);
+        }
+      }
+
+      function fmtDate(iso) {
+        try {
+          const d = new Date(iso);
+          return d.toLocaleString("ru-RU", { dateStyle: "short", timeStyle: "short" });
+        } catch {
+          return iso;
+        }
+      }
+
+      function escapeHtml(s) {
+        return String(s)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+
+      function renderTasks(list) {
+        const ul = $("taskList");
+        ul.innerHTML = "";
+        for (const t of list) {
+          const li = document.createElement("li");
+          li.dataset.id = String(t.id);
+
+          const cb = document.createElement("input");
+          cb.type = "checkbox";
+          cb.checked = t.is_done;
+          cb.setAttribute("aria-label", "Выполнено");
+          cb.addEventListener("change", () => patchTask(t.id, { is_done: cb.checked }));
+
+          const body = document.createElement("div");
+          body.className = "task-body";
+
+          const titleEl = document.createElement("div");
+          titleEl.className = "task-title" + (t.is_done ? " done" : "");
+          titleEl.textContent = t.title;
+          titleEl.title = "Нажмите, чтобы редактировать";
+          titleEl.addEventListener("click", () => beginInlineEdit(t, titleEl));
+
+          if (t.description) {
+            const d = document.createElement("div");
+            d.className = "task-desc";
+            d.textContent = t.description;
+            body.appendChild(d);
+          }
+
+          const meta = document.createElement("div");
+          meta.className = "task-meta";
+          let ownerPrefix = "";
+          if (isAdmin()) {
+            const em = (t.owner_email || "").trim();
+            if (em) {
+              ownerPrefix =
+                '<i class="fa-solid fa-user"></i> ' +
+                escapeHtml(em) +
+                ' <span style="color:#94a3b8;font-size:0.72rem">id ' +
+                t.owner_id +
+                "</span> · ";
+            } else {
+              ownerPrefix =
+                '<i class="fa-solid fa-user"></i> id ' + t.owner_id + " · ";
+            }
+          }
+          meta.innerHTML =
+            ownerPrefix +
+            '<i class="fa-regular fa-clock"></i> ' +
+            fmtDate(t.created_at) +
+            (t.updated_at && t.updated_at !== t.created_at
+              ? ' · <i class="fa-solid fa-pen"></i> ' + fmtDate(t.updated_at)
+              : "");
+
+          body.insertBefore(titleEl, body.firstChild);
+          body.appendChild(meta);
+
+          const del = document.createElement("button");
+          del.type = "button";
+          del.className = "danger";
+          del.innerHTML = '<i class="fa-solid fa-trash"></i>';
+          del.title = "Удалить";
+          del.addEventListener("click", () => removeTask(li, t.id));
+
+          li.appendChild(cb);
+          li.appendChild(body);
+          li.appendChild(del);
+          ul.appendChild(li);
+        }
+      }
+
+      function beginInlineEdit(task, titleEl) {
+        if (titleEl.querySelector("input")) return;
+        const inp = document.createElement("input");
+        inp.type = "text";
+        inp.value = task.title;
+        inp.maxLength = 200;
+        titleEl.textContent = "";
+        titleEl.appendChild(inp);
+        inp.focus();
+        inp.select();
+
+        const save = async () => {
+          const v = inp.value.trim();
+          if (!v || v === task.title) {
+            titleEl.textContent = task.title;
+            return;
+          }
+          await patchTask(task.id, { title: v });
+        };
+
+        inp.addEventListener("keydown", (ev) => {
+          if (ev.key === "Enter") {
+            ev.preventDefault();
+            save();
+          }
+          if (ev.key === "Escape") {
+            titleEl.textContent = task.title;
+          }
+        });
+        inp.addEventListener("blur", () => {
+          save();
+        });
+      }
+
+      async function patchTask(id, body) {
+        showMsg($("appMsg"), "", "err");
+        setLoading($("appLoading"), true);
+        try {
+          const r = await fetch(apiBase() + tasksBasePath() + "/" + id, {
+            method: "PATCH",
+            headers: authHeaders(),
+            body: JSON.stringify(body),
+          });
+          if (r.status === 401) {
+            logout();
+            return;
+          }
+          if (!r.ok) {
+            showMsg($("appMsg"), "Обновление: " + r.status + " " + (await r.text()), "err");
+          }
+          await loadTasks();
+        } catch (e) {
+          showMsg($("appMsg"), "Сеть: " + (e.message || e), "err");
+        } finally {
+          setLoading($("appLoading"), false);
+        }
+      }
+
+      async function removeTask(li, id) {
+        li.classList.add("removing");
+        showMsg($("appMsg"), "", "err");
+        try {
+          await new Promise((r) => setTimeout(r, 220));
+          const r = await fetch(apiBase() + tasksBasePath() + "/" + id, {
+            method: "DELETE",
+            headers: authHeaders(),
+          });
+          if (r.status === 401) {
+            logout();
+            return;
+          }
+          if (r.status !== 204) {
+            showMsg($("appMsg"), "Удаление: " + r.status + " " + (await r.text()), "err");
+          }
+          await loadTasks();
+        } catch (e) {
+          showMsg($("appMsg"), "Сеть: " + (e.message || e), "err");
+          li.classList.remove("removing");
+        }
+      }
+
+      async function addTask() {
+        const title = $("newTitle").value.trim();
+        const description = $("newDesc").value.trim() || null;
+        showMsg($("appMsg"), "", "err");
+        if (!title) {
+          $("newTitle").classList.add("invalid");
+          showMsg($("appMsg"), "Введите заголовок задачи.", "err");
+          return;
+        }
+        $("newTitle").classList.remove("invalid");
+        setLoading($("appLoading"), true);
+        try {
+          let body = { title, description, is_done: false };
+          if (isAdmin()) {
+            const raw = $("newOwnerId").value.trim();
+            const selfId = parseInt(localStorage.getItem(USER_ID_KEY) || "0", 10);
+            const ownerId = raw ? parseInt(raw, 10) : selfId;
+            if (!Number.isFinite(ownerId) || ownerId < 1) {
+              showMsg(
+                $("appMsg"),
+                "Укажите числовой id владельца или очистите поле, чтобы создать задачу себе (нужен повторный вход, если профиль не загрузился).",
+                "err",
+              );
+              setLoading($("appLoading"), false);
+              return;
+            }
+            body = { ...body, owner_id: ownerId };
+          }
+          const r = await fetch(apiBase() + tasksBasePath(), {
+            method: "POST",
+            headers: authHeaders(),
+            body: JSON.stringify(body),
+          });
+          if (r.status === 401) {
+            logout();
+            return;
+          }
+          if (r.status !== 201) {
+            showMsg($("appMsg"), "Создание: " + r.status + " " + (await r.text()), "err");
+            return;
+          }
+          $("newTitle").value = "";
+          $("newDesc").value = "";
+          await loadTasks();
+        } catch (e) {
+          showMsg($("appMsg"), "Сеть: " + (e.message || e), "err");
+        } finally {
+          setLoading($("appLoading"), false);
+        }
+      }
+
+      $("btnAuth").addEventListener("click", registerAndLogin);
+      $("btnLogout").addEventListener("click", logout);
+      $("btnAdd").addEventListener("click", addTask);
+      $("newTitle").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") addTask();
+      });
+      $("btnRefresh").addEventListener("click", loadTasks);
+      ["filterStatus", "sortBy", "sortOrder"].forEach((id) => $(id).addEventListener("change", loadTasks));
+
+      async function boot() {
+        $("email").value = localStorage.getItem(EMAIL_KEY) || "demo@example.com";
+        $("password").value = "secret12";
+        const t = localStorage.getItem(TOKEN_KEY);
+        if (!t) {
+          showApp(false);
+          setAdminUi();
+          return;
+        }
+        showApp(true);
+        const ok = await refreshUserProfile();
+        if (!ok) return;
+        $("userLabel").textContent = buildUserLabel();
+        await loadTasks();
+      }
+
+      boot();
+    </script>
+  </body>
+</html>
