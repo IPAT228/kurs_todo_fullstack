@@ -1,4 +1,4 @@
-## Учебный проект: TODO List (fullstack)
+## TODO List (fullstack)
 
 **Задание:** backend на **Python (FastAPI)**, **веб-приложение** и **мобильное приложение** — простой список задач с регистрацией, JWT и CRUD. Теория по FastAPI — курс [Stepik: «FastAPI, Docker и CI/CD»](https://stepik.org/course/179694/promo). Ориентир по идее API — пример [hazadus/fastapi-todos](https://github.com/hazadus/fastapi-todos).
 
