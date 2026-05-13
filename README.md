@@ -60,6 +60,5 @@ flutter run -d chrome
 
 - `backend/` — REST API, JWT, операции с задачами, пример разграничения прав (`/admin/tasks`).
 - `web_client/` — веб-приложение (HTML/CSS/JS): фильтры, сортировки, inline-edit, ошибки API.
-- `docker-compose.yml` — опциональный PostgreSQL для asyncpg.
-- `mobile/todo_app/` — клиент Flutter: список задач, создание, отметка выполнения, удаление.
+- `docker-compose.yml` — опциональный PostgreSQL для asyncpg.е.
 - `docs/POYASNITELNAYA_ZAPISKA.md` — текст для сдачи пояснительной записки.
