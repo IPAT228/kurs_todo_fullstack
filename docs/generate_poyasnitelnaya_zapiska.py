@@ -385,7 +385,35 @@ def build() -> Document:
         ],
     )
 
-    h = doc.add_heading("8. Анализ кода на соответствие принципам SOLID", level=1)
+    h = doc.add_heading(
+        "8. Системы управления знаниями и инструменты документирования проекта",
+        level=1,
+    )
+    _style_heading_runs(h, 16)
+    _p(
+        doc,
+        "В отчётных формулировках под системами управления знаниями (СУЗ) в ИТ часто понимают средства фиксации и "
+        "совместного использования знаний о продукте и процессе разработки; это не следует смешивать с СУБД из раздела 7, "
+        "где речь идёт о хранении данных приложения.",
+    )
+    _p(doc, "Примеры класса организационных СУЗ (для отчёта, при необходимости):", bold=True)
+    _bullets(
+        doc,
+        [
+            "Корпоративные вики и порталы: Confluence, Notion, Microsoft SharePoint; при командной работе — также Wiki в GitHub.",
+            "В данном учебном проекте основной акцент — репозиторий с исходным кодом и автоматически поддерживаемое описание REST API.",
+        ],
+    )
+    _p(doc, "Инженерные носители знаний, используемые в проекте:", bold=True)
+    _bullets(
+        doc,
+        [
+            "Git и GitHub — версионирование кода, история изменений, публикация репозитория; сопутствующие знания — в README.md и каталоге docs/.",
+            "OpenAPI — машиночитаемое описание HTTP API. FastAPI формирует спецификацию (эндпоинт /openapi.json) и интерактивные страницы /docs (Swagger UI) и /redoc (ReDoc), что согласует документацию с фактическим поведением сервера и облегчает сопровождение веб- и Flutter-клиентов.",
+        ],
+    )
+
+    h = doc.add_heading("9. Анализ кода на соответствие принципам SOLID", level=1)
     _style_heading_runs(h, 16)
     _p(
         doc,
@@ -404,7 +432,7 @@ def build() -> Document:
         ],
     )
 
-    h = doc.add_heading("9. Метод авторизации на backend и подходы к контролю доступа", level=1)
+    h = doc.add_heading("10. Метод авторизации на backend и подходы к контролю доступа", level=1)
     _style_heading_runs(h, 16)
     _p(
         doc,
@@ -429,7 +457,7 @@ def build() -> Document:
         ],
     )
 
-    h = doc.add_heading("10. Выбор и использование логгера", level=1)
+    h = doc.add_heading("11. Выбор и использование логгера", level=1)
     _style_heading_runs(h, 16)
     _p(
         doc,
@@ -445,7 +473,7 @@ def build() -> Document:
         ],
     )
 
-    h = doc.add_heading("11. Тестирование", level=1)
+    h = doc.add_heading("12. Тестирование", level=1)
     _style_heading_runs(h, 16)
     _p(
         doc,
@@ -455,7 +483,7 @@ def build() -> Document:
         "полный цикл CRUD задач и ограничение доступа к административному API для роли user.",
     )
 
-    h = doc.add_heading("12. Репозиторий проекта и установка", level=1)
+    h = doc.add_heading("13. Репозиторий проекта и установка", level=1)
     _style_heading_runs(h, 16)
     _p(
         doc,
@@ -482,7 +510,7 @@ def build() -> Document:
     )
     _set_run_font(rph, size_pt=14, color=RGB_BLACK)
 
-    h = doc.add_heading("13. Список источников", level=1)
+    h = doc.add_heading("14. Список источников", level=1)
     _style_heading_runs(h, 16)
     sources = [
         ("Курс Stepik «FastAPI, Docker и CI/CD» (промо)", "https://stepik.org/course/179694/promo"),
@@ -503,6 +531,9 @@ def build() -> Document:
         ("Документация Flutter", "https://flutter.dev/"),
         ("Документация FastAPI", "https://fastapi.tiangolo.com/"),
         ("Документация Ruff", "https://docs.astral.sh/ruff/"),
+        ("Спецификация OpenAPI", "https://spec.openapis.org/oas/latest.html"),
+        ("Автоматическая документация API в FastAPI (Swagger UI / ReDoc)", "https://fastapi.tiangolo.com/features/#automatic-docs"),
+        ("GitHub", "https://github.com/"),
     ]
     for i, (title, url) in enumerate(sources, 1):
         p = doc.add_paragraph(style="List Number")

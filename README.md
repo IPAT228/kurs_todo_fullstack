@@ -8,7 +8,6 @@
 | Веб | `web_client/` — регистрация/вход, **localStorage**, фильтр и сортировка, inline-редактирование, анимации, Font Awesome, адаптивная вёрстка |
 | Мобильное | `mobile/todo_app/` — Flutter (Android / iOS / web / Windows) |
 
-Подробный текст для сдачи: [docs/POYASNITELNAYA_ZAPISKA.md](docs/POYASNITELNAYA_ZAPISKA.md).
 
 ---
 
@@ -19,9 +18,10 @@
 См. [backend/README.md](backend/README.md). Кратко:
 
 ```text
-cd backend
-py -3 -m pip install -r requirements.txt
-copy .env.example .env
+cd c:\Users\vddrd\Downloads\kurs_todo_fullstack\backend
+py -3 -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
 py -3 -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
@@ -43,7 +43,7 @@ py -3 -m http.server 8080
 Запуск из командной строки — только из этой папки:
 
 ```text
-cd mobile/todo_app
+cd c:\Users\vddrd\Downloads\kurs_todo_fullstack\mobile\todo_app
 flutter pub get
 flutter run -d chrome
 ```
